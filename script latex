@@ -1,0 +1,602 @@
+\documentclass[12pt]{article}
+
+% --- Layout & font ---
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{times}
+\setstretch{1.5}
+\usepackage{indentfirst}
+
+% --- Figures & floats ---
+\usepackage{graphicx}
+\usepackage{float}
+
+% --- Teks & tabel ---
+\usepackage{ragged2e}
+\usepackage{array}
+\usepackage{longtable}
+
+% --- Caption & link ---
+\usepackage[justification=justified,singlelinecheck=false]{caption}
+\usepackage[hidelinks]{hyperref}
+
+% --- TOC depth ---
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+
+% --- (Opsional) path gambar: aktifkan kalau semua gambar disimpan di folder 'images'
+% \graphicspath{{images/}}
+
+\begin{document}
+
+% =================== COVER PAGE (TIDAK DIUBAH) ===================
+\begin{titlepage}
+\begin{center}
+
+\vspace*{0.4cm}
+
+\Large
+\textbf{EVALUASI AKHIR SEMESTER}\\
+\textbf{TEKNOLOGI IoT}\\[0.5cm]
+
+\normalsize
+\textbf{Dosen : Ahmad Radhy, S.SI., M.SI.}\\[0.5cm]
+
+\textit{“Monitoring Suhu dan Kelembapan Berbasis Embedded Rust pada ESP32-S3 dengan Sensor DHT22 untuk Mendukung Smart Agriculture Menggunakan Infrastruktur IoT Cloud”}\\[1cm]
+
+\includegraphics[width=6cm]{WhatsApp Image 2024-09-20 at 19.50.05_b8ddd1f1.jpg}\\[1.5cm]
+
+\textbf{Disusun Oleh :}\\[0.3cm]
+Reva Aulia Rahman (2042231024)\\
+Siti Aisyah (2042231062)\\[2cm]
+
+\large
+PRODI D4 TEKNOLOGI REKAYASA INSTRUMENTASI\\
+DEPARTEMEN TEKNIK INSTRUMENTASI\\
+FAKULTAS VOKASI\\
+INSTITUT TEKNOLOGI SEPULUH NOPEMBER\\[0 cm]
+2025
+
+\end{center}
+\end{titlepage}
+
+% =================== DAFTAR ISI ===================
+\newpage
+\pagestyle{plain}
+\addcontentsline{toc}{section}{DAFTAR ISI}
+\begin{center}
+\renewcommand{\contentsname}{DAFTAR ISI}
+\tableofcontents
+\thispagestyle{plain}
+\end{center} % <— penting: tutup center
+
+% =================== BAB I ===================
+\newpage
+\justifying
+
+\begin{center}
+  \Large\bfseries BAB I\\[0.3cm]
+  \Large\bfseries PENDAHULUAN
+\end{center}
+
+\addcontentsline{toc}{section}{BAB I PENDAHULUAN}
+\setcounter{section}{1}
+\setlength{\emergencystretch}{3em} % beri ruang ekstra supaya tidak keluar margin
+\sloppy % biar LaTeX lebih toleran terhadap teks panjang
+
+
+\subsection{Latar Belakang}
+Pertanian merupakan sektor penting dalam perekonomian Indonesia yang menghadapi tantangan besar akibat perubahan iklim, fluktuasi cuaca, dan keterbatasan sumber daya alam. Untuk menjaga produktivitas, dibutuhkan sistem pemantauan lingkungan yang dapat mengontrol faktor-faktor vital seperti suhu dan kelembapan, yang sangat berpengaruh terhadap pertumbuhan tanaman serta hasil panen. Menurut Nugroho et al. (2023), ketidakseimbangan dua parameter tersebut dapat menyebabkan stres fisiologis pada tanaman, menurunkan kualitas hasil pertanian, dan mempercepat kerusakan pascapanen. Oleh karena itu, penerapan teknologi pemantauan otomatis berbasis \textit {Internet of Things} (IoT) menjadi langkah strategis untuk mendukung transformasi menuju sistem pertanian cerdas \textit {(smart agriculture).}
+
+Perkembangan teknologi IoT memungkinkan integrasi antara sensor, mikrokontroler, dan platform cloud dalam satu ekosistem pemantauan yang bekerja secara real-time. Sistem ini mampu mengumpulkan, mengirim, dan menampilkan data lingkungan secara otomatis melalui jaringan internet, sehingga memudahkan petani untuk mengambil keputusan berbasis data (Ahmed et al., 2021). Platform cloud seperti \textit {ThingsBoard} mendukung visualisasi interaktif dan analisis tren parameter lingkungan melalui antarmuka dashboard yang mudah diakses. Dengan pendekatan ini, efisiensi pengelolaan lahan pertanian dapat ditingkatkan, dan ketergantungan terhadap pengukuran manual dapat dikurangi secara signifikan (Setiawan et al., 2022).
+
+Perkembangan teknologi Internet of Things (IoT) memungkinkan pengumpulan dan pengiriman data dari berbagai sensor secara otomatis ke server pusat. Dalam konteks ini, \textit{Edge Gateway} berperan penting sebagai penghubung antara perangkat sensor di lapangan dengan sistem cloud. \textit{Edge Gateway} melakukan proses awal seperti filtrasi, pengolahan, dan pengiriman data ke server sehingga dapat mengurangi latensi dan beban jaringan. Untuk mendukung analisis perilaku termal dan simulasi sistem fisik \textit{greenhouse}, digunakan DWSIM, yaitu perangkat lunak simulasi proses yang mampu memodelkan transfer panas, kelembapan, dan aliran udara. Melalui DWSIM, sistem dapat diuji dan divalidasi sebelum implementasi nyata dilakukan, sehingga meminimalkan risiko kesalahan desain (L. Kumar et al., 2021).
+
+Dalam penelitian IoT modern, mikrokontroler ESP32-S3 menjadi salah satu pilihan utama karena mendukung konektivitas Wi-Fi dan Bluetooth, konsumsi daya rendah, serta kompatibel untuk pengembangan sistem tertanam \textit {(embedded systems)}. Sensor DHT22 digunakan karena memiliki tingkat akurasi tinggi dalam pengukuran suhu dan kelembapan udara, menjadikannya ideal untuk pemantauan lingkungan pada sistem pertanian. Data dari sensor ini kemudian dikirimkan menggunakan protokol MQTT, yang dikenal ringan dan efisien untuk komunikasi perangkat IoT dengan server cloud (Kumar et al., 2021). Kombinasi perangkat keras ini memungkinkan pengiriman data secara cepat dan stabil dengan latensi rendah.
+
+Salah satu inovasi utama dalam proyek ini adalah penggunaan bahasa pemrograman Rust dalam mode \textit {bare-metal} pada ESP32-S3. Rust dikenal memiliki tingkat keamanan memori tinggi, efisiensi eksekusi, serta mampu mencegah kesalahan umum seperti null pointer dan data race tanpa mengorbankan performa sistem (Vandervelden, 2024). Penggunaan Rust dalam pengembangan sistem IoT masih relatif baru, namun berbagai studi seperti \textit {Rust for Embedded Systems: Current State and Open Challenges} menunjukkan bahwa bahasa ini berpotensi menjadi standar baru untuk sistem tertanam berperforma tinggi dan aman (ACM Digital Library, 2024).
+
+Dengan mengintegrasikan sensor DHT22, mikrokontroler ESP32-S3, dan pemrograman berbasis Rust yang berkomunikasi melalui protokol MQTT ke platform \textit {ThingsBoard Cloud,} sistem ini dirancang untuk melakukan pemantauan suhu dan kelembapan secara \textit {real-time} dengan dukungan fitur \textit {Real-Time Clock} (RTC). Sistem ini diharapkan dapat memberikan solusi efisien, akurat, dan aman dalam mendukung konsep  \textit {Smart Agriculture}. Melalui pendekatan ini, petani dapat memantau kondisi lingkungan secara langsung, mengambil keputusan cepat berdasarkan data, serta mewujudkan pertanian berkelanjutan yang adaptif terhadap tantangan perubahan iklim dan era digitalisasi.
+
+\subsection{Identifikasi dan Pembatasan Masalah}
+\subsubsection{Identifikasi Masalah}
+\begin{enumerate}
+    \item Pemantauan suhu dan kelembapan pada lahan pertanian masih dilakukan secara manual
+    \item Belum adanya integrasi antara sensor DHT22, mikrokontroler ESP32-S3, dan sistem \textit {cloud ThingsBoard}
+    \item Diperlukan sistem pemrograman berbasis embedded yang efisien dan aman menggunakan bahasa Rust
+    \item Belum diterapkannya protokol komunikasi ringan dan andal seperti MQTT yang dapat menjamin proses pertukaran data antara perangkat dan server cloud
+    \item Kurangnya fitur pencatatan waktu dan visualisasi data terintegrasi yang memungkinkan pengguna memantau tren suhu dan kelembapan berdasarkan waktu aktual \textit {(real-time clock)}
+\end{enumerate}
+
+\subsubsection{Pembatasan Masalah}
+\begin{enumerate}
+    \item Penelitian difokuskan pada sistem pemantauan suhu dan kelembapan udara pada lingkungan pertanian berbasis IoT, tanpa mencakup sistem pengendalian aktuator secara otomatis.
+    \item Perangkat utama yang digunakan adalah mikrokontroler ESP32-S3 yang diprogram menggunakan bahasa Rust dalam mode \textit {bare-metal} untuk memastikan efisiensi dan keamanan sistem tertanam.
+    \item Sensor DHT22 digunakan sebagai alat pengukur suhu dan kelembapan udara, sedangkan parameter lingkungan lain seperti intensitas cahaya dan kelembapan tanah tidak dibahas pada penelitian ini.
+    \item Komunikasi data antara perangkat dan server cloud menggunakan protokol MQTT, yang diimplementasikan untuk memastikan pertukaran data ringan dan efisien pada jaringan nirkabel.
+    \item Sistem backend dan visualisasi data menggunakan platform \textit{ThingsBoard Cloud}, dengan integrasi waktu nyata melalui fitur \textit {Real-Time Clock} (RTC) untuk pencatatan data yang akurat.
+\end{enumerate}
+
+\subsection{Rumusan Masalah}
+\begin{enumerate}
+    \item Bagaimana merancang sistem pemantauan suhu dan kelembapan udara berbasis Embedded Rust pada mikrokontroler ESP32-S3 dengan sensor DHT22 untuk mendukung implementasi Smart Agriculture? \textit{Backend Rust}, dan \textit{Cloud ThingsBoard}?
+    \item Bagaimana menerapkan protokol MQTT agar proses pengiriman data sensor menuju platform \textit {ThingsBoard Cloud} dapat berjalan secara efisien, stabil, dan real-time?
+    \item Bagaimana memanfaatkan \textit {Real-Time Clock} (RTC) untuk mencatat dan menampilkan data suhu serta kelembapan berdasarkan waktu aktual pada sistem pemantauan berbasis IoT?
+    \item Bagaimana kinerja sistem dari sisi akurasi pembacaan sensor DHT22, keamanan sistem tertanam berbasis Rust, dan stabilitas komunikasi MQTT selama proses transmisi data?
+    \item Bagaimana hasil integrasi keseluruhan sistem — mulai dari perangkat sensor, mikrokontroler, hingga cloud — dapat membantu mewujudkan monitoring pertanian cerdas yang efisien dan adaptif terhadap perubahan lingkungan?
+\end{enumerate}
+
+\subsection{Tujuan Penelitian}
+\begin{enumerate}
+    \item Merancang arsitektur sistem IoT berbasis \textit {embedded} untuk pemantauan suhu dan kelembapan udara pada lingkungan pertanian menggunakan mikrokontroler ESP32-S3.
+    \item Mengimplementasikan sensor DHT22 sebagai alat ukur suhu dan kelembapan serta mengintegrasikannya dengan sistem berbasis \textit {Embedded Rust} untuk meningkatkan efisiensi dan keamanan pengolahan data.
+    \item Menerapkan protokol komunikasi MQTT sebagai jalur transmisi data antara perangkat IoT dan platform \textit {ThingsBoard Cloud} agar proses pengiriman data berlangsung ringan, cepat, dan stabil.
+    \item Menggunakan \textit {Real-Time Clock} (RTC) sebagai penanda waktu akurat untuk setiap data suhu dan kelembapan yang dikirimkan, guna mendukung analisis data berbasis waktu secara real-time.
+    \item Mengembangkan dashboard \textit {ThingsBoard} sebagai media visualisasi interaktif untuk menampilkan data suhu dan kelembapan secara \textit {real-time}, sehingga pengguna dapat memantau kondisi lingkungan pertanian secara efisien dan terpusat.
+\end{enumerate}
+
+\subsection{Manfaat Penelitian}
+    \begin{enumerate}
+    \item {Bagi Pemerintah:} Menjadi referensi dalam pengembangan teknologi Smart Agriculture berbasis \textit {Internet of Things} (IoT) yang dapat diterapkan pada sektor pertanian nasional untuk meningkatkan efisiensi, produktivitas, serta mendukung program digitalisasi pertanian berkelanjutan.
+    \item {Bagi Masyarakat:} Memberikan solusi praktis dalam pemantauan kondisi lingkungan pertanian seperti suhu dan kelembapan secara otomatis dan \textit {real-time}, sehingga dapat membantu petani meningkatkan efisiensi pengelolaan lahan dan mengurangi risiko gagal panen akibat perubahan cuaca.
+    \item {Bagi Mahasiswa:} Menjadi media pembelajaran dan penelitian lanjutan dalam penerapan teknologi IoT berbasis \textit {Embedded Rust}, komunikasi MQTT, dan integrasi \textit {cloud ThingsBoard}, serta memberikan pengalaman nyata dalam pengembangan sistem tertanam dan visualisasi data \textit {real-time}.
+    \end{itemize}
+
+
+% =================== BAB II ===================
+\newpage
+\justifying
+\begin{center}
+  \Large\bfseries BAB II\\[0.3cm]
+  \Large\bfseries TINJAUAN PUSTAKA
+\end{center}
+\addcontentsline{toc}{section}{BAB II TINJAUAN PUSTAKA}
+\setcounter{section}{2}
+\setcounter{subsection}{0}
+
+\subsection{State of the Art}
+
+\begin{enumerate}
+    \item \textit{Visualization and Analysis of Knowledge Structure of Smart Agriculture in the Context of Big Data} — Y. Liu et al. (2021) \\
+    Penelitian ini menganalisis tren dan struktur pengetahuan dalam bidang pertanian cerdas berbasis \textit{big data} dengan menggunakan metode bibliometrik dan visualisasi melalui \textit{VOSviewer}. Analisis dilakukan terhadap literatur dalam database \textit{Web of Science} melalui pemetaan kata kunci, \textit{co-citation}, dan \textit{network clustering} untuk mengidentifikasi arah penelitian utama. Ditemukan lima topik penting, yaitu penginderaan jauh, \textit{IoT} pertanian, kecerdasan buatan, pemodelan prediksi hasil, dan sistem pengelolaan sumber daya. Studi ini menegaskan bahwa arah riset masa depan berfokus pada integrasi \textit{AI}, \textit{IoT}, dan analitik \textit{big data} guna meningkatkan efisiensi dan keberlanjutan sistem pertanian cerdas.
+
+    \item \textit{Smart Agriculture, Precision Agriculture, Digital Twins in Agriculture: Similarities and Differences} — A. M. Sakhare et al. (2023) \\
+    Artikel ini mengkaji keterkaitan antara konsep \textit{smart agriculture}, \textit{precision agriculture}, dan \textit{digital twins in agriculture} melalui analisis literatur dan studi taksonomi teknologi. Ketiganya memiliki kesamaan dalam hal pemantauan \textit{real-time} dan otomatisasi pengendalian lingkungan, tetapi \textit{digital twin} unggul karena kemampuannya mensimulasikan kondisi tanaman secara virtual untuk mendukung pengambilan keputusan adaptif. Penelitian ini menekankan pentingnya penggunaan \textit{edge computing} dan \textit{IoT} dalam mengoptimalkan manajemen pertanian berbasis data untuk mencapai efisiensi dan keberlanjutan sistem agrikultur modern.
+
+    \item \textit{On the Evaluation of DHT22 Temperature Sensor for IoT Application} — T. T. Pham et al. (2020) \\
+    Penelitian ini mengevaluasi kinerja sensor suhu dan kelembapan \textit{DHT22} untuk aplikasi \textit{IoT} dengan fokus pada stabilitas dan akurasi pengukuran. Uji eksperimental dilakukan menggunakan \textit{Raspberry Pi} melalui komunikasi serial \textit{UART} dengan pembandingan hasil terhadap sensor referensi. Hasilnya menunjukkan \textit{DHT22} memiliki tingkat kesalahan ±0,5°C untuk suhu dan ±2\% RH untuk kelembapan dengan latensi pembacaan sekitar dua detik. Sensor ini dinilai sesuai untuk sistem pemantauan lingkungan berbiaya rendah seperti \textit{greenhouse} berbasis \textit{ThingsBoard} karena kemampuannya dalam menghasilkan data stabil secara \textit{real-time}.
+
+    \item \textit{Data Visualization for Wireless Sensor Networks Using ThingsBoard} — P. K. Singh et al. (2021) \\
+    Penelitian ini mengembangkan sistem visualisasi data berbasis \textit{ThingsBoard} untuk jaringan sensor nirkabel (\textit{Wireless Sensor Network}). Sistem dibangun menggunakan protokol \textit{MQTT} sebagai penghubung antara node sensor dan platform \textit{ThingsBoard} yang menampilkan data suhu dan kelembapan secara \textit{real-time}. Hasil penelitian menunjukkan latensi pengiriman data kurang dari dua detik dengan tingkat reliabilitas mencapai 95\%. Studi ini membuktikan bahwa \textit{ThingsBoard} efektif digunakan sebagai \textit{cloud platform} yang fleksibel untuk pemantauan \textit{IoT} dan dapat diintegrasikan dengan \textit{backend} berbasis \textit{Rust} maupun \textit{Node.js}.
+
+    \item \textit{ESP32-S3 DevKit-C Integration for Enhanced Road Safety for Pothole Detection and Nighttime Driving Assistance} — R. Kumari et al. (2024) \\
+    Penelitian ini mengusulkan sistem berbasis \textit{ESP32-S3} untuk mendeteksi lubang jalan dan membantu pengemudi saat malam hari. Sistem dirancang dengan kombinasi sensor ultrasonik, akselerometer, dan kamera, serta menerapkan algoritma pengolahan citra yang terhubung ke \textit{cloud} untuk penyimpanan dan analisis data. Hasil pengujian menunjukkan tingkat akurasi deteksi sebesar 92\% dan efisiensi energi tinggi. Studi ini memperkuat potensi \textit{ESP32-S3} dalam mendukung aplikasi \textit{edge IoT} dengan kemampuan \textit{real-time} serta efisiensi daya yang optimal untuk sistem tertanam.
+
+    \item \textit{Real-Time GPIO Performance of Modern Programming Languages for Embedded Linux Application Development} — A. L. Moore et al. (2023) \\
+    Penelitian ini membandingkan kinerja \textit{GPIO real-time} dari berbagai bahasa pemrograman pada sistem \textit{Embedded Linux} dengan fokus pada latensi dan \textit{jitter}. Pengujian dilakukan pada \textit{Raspberry Pi} menggunakan \textit{C}, \textit{Python}, \textit{Go}, dan \textit{Rust}. Hasil menunjukkan bahwa \textit{Rust} memiliki latensi terendah yaitu 12,6 µs dengan stabilitas lebih tinggi dibanding \textit{Python} dan \textit{Go}. Temuan ini menegaskan bahwa \textit{Rust} merupakan bahasa yang efisien dan aman secara memori untuk sistem tertanam yang memerlukan respons cepat dan performa tinggi.
+
+    \item \textit{TECS: Rust Memory-safe Component Framework for Embedded Systems} — H. Nakata et al. (2020) \\
+    Penelitian ini memperkenalkan \textit{TECS (TOPPERS Embedded Component System)} berbasis \textit{Rust} sebagai kerangka kerja yang aman terhadap kesalahan memori dalam sistem tertanam. Implementasi dilakukan pada mikrokontroler \textit{ARM Cortex-M} untuk menganalisis efisiensi eksekusi dan keamanan memori. Hasil penelitian menunjukkan penurunan bug pointer hingga 60\% dan peningkatan efisiensi kinerja sekitar 30\% dibanding implementasi \textit{C/C++}. Hal ini menegaskan keunggulan \textit{Rust} untuk sistem \textit{RTOS} dan aplikasi \textit{IoT} yang membutuhkan reliabilitas tinggi.
+
+    \item \textit{Should We Use Rust Platform in Our IoT Applications? A Multivocal Review} — D. Costa et al. (2022) \\
+    Artikel ini meninjau kelayakan penggunaan \textit{Rust} untuk pengembangan aplikasi \textit{IoT} dengan menekankan aspek keamanan, performa, dan interoperabilitas. Studi ini memadukan tinjauan literatur dengan wawancara pakar industri guna mengevaluasi efektivitas \textit{Rust} dalam lingkungan \textit{embedded}. Hasilnya menunjukkan bahwa \textit{Rust} unggul dalam hal \textit{memory safety}, efisiensi eksekusi, dan manajemen \textit{concurrency}, meskipun masih terdapat keterbatasan pada ketersediaan pustaka \textit{embedded}. Kesimpulannya, \textit{Rust} cocok digunakan untuk \textit{backend IoT} dan \textit{edge computing} yang menuntut reliabilitas dan keamanan tinggi.
+
+    \item \textit{Ariel OS: An Embedded Rust Operating System for Networked Sensors \& Multi-Core Microcontrollers} — E. Frank et al. (2025) \\
+    Penelitian ini memperkenalkan \textit{Ariel OS}, sistem operasi tertanam berbasis \textit{Rust} yang dirancang untuk sensor jaringan dan mikrokontroler multi-inti seperti \textit{ESP32-S3}. Pengujian dilakukan pada arsitektur \textit{ARM Cortex-M} dan \textit{RISC-V} dengan fokus pada efisiensi \textit{multicore scheduling}. Hasil menunjukkan bahwa \textit{Ariel OS} memiliki overhead kurang dari 3\% dan mampu mendukung beban kerja \textit{multitasking} secara efisien. Hal ini membuktikan bahwa \textit{Rust} layak digunakan untuk pengembangan sistem operasi ringan pada perangkat \textit{IoT real-time}.
+
+    \item \textit{A Novel IoT Access Architecture for Vehicle Monitoring System} — S. Wang et al. (2016) \\
+    Penelitian ini mengusulkan arsitektur akses \textit{IoT} berbasis \textit{FPGA} dan \textit{SoC} untuk sistem pemantauan kendaraan yang efisien. Desain sistem menggunakan standar \textit{IEEE1451.2} untuk menghubungkan sensor dan aktuator, yang diuji pada sistem pemantauan bus berbasis \textit{ARM Cortex-A9} dan \textit{MicroBlaze}. Hasil eksperimen menunjukkan kemampuan sistem dalam mengirimkan data \textit{real-time} dengan konsumsi daya rendah dan stabilitas tinggi. Studi ini menunjukkan efektivitas arsitektur \textit{IoT} berbasis \textit{FPGA} untuk pemantauan kondisi kendaraan.
+
+    \item \textit{Internet of Things for the Future of Smart Agriculture: A Comprehensive Survey of Emerging Technologies} — O. Friha et al. (2021) \\
+    Publikasi ini merupakan survei komprehensif mengenai perkembangan teknologi \textit{IoT} dalam mendukung pertanian cerdas. Kajian dilakukan terhadap berbagai penelitian yang mengangkat tema \textit{UAV}, jaringan nirkabel, \textit{SDN/NFV}, platform \textit{open-source}, serta kolaborasi antara \textit{cloud} dan \textit{edge computing}. Hasil survei menunjukkan bahwa integrasi \textit{edge-cloud collaboration} mampu mengatasi masalah latensi dan beban jaringan, meskipun masih dihadapkan pada tantangan fragmentasi protokol dan keamanan data. Penelitian ini memberikan panduan penting mengenai arah riset \textit{IoT agriculture} di masa depan.
+
+        \item \textit{Performance Evaluation of C/C++, MicroPython, Rust and TinyGo Programming Languages on ESP32 Microcontroller} — I. Plauska et al. (2023) \\
+    Penelitian ini membandingkan performa empat bahasa pemrograman—\textit{C/C++}, \textit{MicroPython}, \textit{Rust}, dan \textit{TinyGo}—pada mikrokontroler \textit{ESP32}. Pengujian dilakukan terhadap algoritma \textit{FFT}, \textit{FIR}, dan \textit{CRC} untuk mengukur latensi serta penggunaan CPU. Hasil penelitian menunjukkan bahwa \textit{Rust} memiliki performa mendekati \textit{C/C++} dengan stabilitas eksekusi yang tinggi, sementara \textit{MicroPython} jauh lebih lambat. Studi ini menegaskan bahwa \textit{Rust} merupakan pilihan tepat untuk proyek \textit{IoT} yang membutuhkan efisiensi dan kinerja optimal di perangkat \textit{ESP32}.
+
+    \item \textit{Overview of Embedded Rust Operating Systems and Frameworks} — T. Vandervelden et al. (2024) \\
+    Artikel ini membahas perkembangan sistem operasi dan kerangka kerja tertanam berbasis \textit{Rust} yang digunakan dalam pengembangan perangkat \textit{IoT}. Kajian dilakukan secara komparatif terhadap beberapa \textit{framework} dan \textit{RTOS} dengan mempertimbangkan aspek isolasi aplikasi, \textit{scheduling}, komunikasi antarproses, serta efisiensi memori. Hasilnya menunjukkan bahwa meskipun ekosistem \textit{Rust} masih berkembang, sejumlah OS tertanam telah mencapai kestabilan tinggi dan cocok untuk aplikasi \textit{sensor node} serta sistem \textit{bare metal} seperti \textit{ESP32-S3}.
+
+    \item \textit{Design and Implementation of a Low-Cost, Open Source IoT-based SCADA System Using ESP32 with OLED, ThingsBoard and MQTT Protocol} — M. Tariq Iqbal \& L. O. Aghenta (2021) \\
+    Penelitian ini merancang sistem \textit{SCADA} berbasis \textit{IoT} dengan memanfaatkan mikrokontroler \textit{ESP32}, protokol \textit{MQTT}, dan platform \textit{ThingsBoard} sebagai sistem visualisasi dan penyimpanan data. Implementasi sistem dilakukan untuk pemantauan tegangan dan arus listrik secara \textit{real-time} melalui \textit{dashboard ThingsBoard}. Hasil pengujian menunjukkan bahwa sistem dapat beroperasi dengan stabil dan latensi rendah, menjadikannya solusi ideal untuk aplikasi pemantauan dan kontrol jarak jauh dengan biaya terjangkau.
+
+    \item \textit{Sensor Data Collection and Analytics with ThingsBoard and Spark Streaming} — R. Patel et al. (2022) \\
+    Penelitian ini mengkaji integrasi \textit{ThingsBoard} dengan \textit{Spark Streaming} untuk pengumpulan dan analisis data sensor secara \textit{real-time}. Sistem diuji dengan membandingkan kinerja antara protokol \textit{MQTT} dan \textit{CoAP} berdasarkan latensi dan efisiensi transmisi data. Hasil eksperimen menunjukkan bahwa \textit{MQTT} lebih unggul dalam stabilitas dan kecepatan komunikasi. Integrasi dengan \textit{Spark Streaming} memungkinkan analisis data sensor secara langsung pada \textit{cloud platform}, menjadikannya relevan untuk sistem pertanian cerdas berbasis analitik waktu nyata.
+
+    \item \textit{An Approach to Assess Robustness of MQTT-based IoT Systems} — B. Jesus et al. (2025) \\
+    Penelitian ini menilai ketahanan sistem \textit{IoT} berbasis \textit{MQTT} terhadap gangguan jaringan dan kegagalan komunikasi. Eksperimen dilakukan dengan mensimulasikan kondisi jaringan yang tidak stabil untuk mengukur keandalan pengiriman pesan dan mekanisme pemulihan data. Hasil penelitian menunjukkan bahwa penerapan \textit{Quality of Service (QoS)}, \textit{retry mechanism}, dan \textit{local buffering} dapat meningkatkan toleransi kesalahan sistem secara signifikan. Studi ini relevan dalam mendukung stabilitas sistem \textit{IoT} pertanian yang menggunakan \textit{MQTT} sebagai protokol komunikasi utama.
+
+    \item \textit{Implementation of Edge Computing Platform for Smart Farms} — S. W. Lee et al. (2022) \\
+    Artikel ini menjelaskan implementasi platform \textit{edge computing} untuk sistem pertanian pintar yang memproses data sensor secara lokal sebelum dikirim ke \textit{cloud}. Sistem diuji pada lahan pertanian nyata menggunakan sensor suhu, kelembapan, dan cahaya dengan komunikasi berbasis \textit{MQTT}. Hasil menunjukkan bahwa pemrosesan data di \textit{edge device} mengurangi latensi dan beban \textit{cloud} secara signifikan, serta meningkatkan efisiensi sistem pengendalian otomatis di lapangan.
+
+    \item \textit{Advancing IoT Interoperability: Dynamic Data Serialization Using ThingsBoard} — D. I. Shvaika et al. (2024) \\
+    Makalah ini membahas peningkatan interoperabilitas sistem \textit{IoT} melalui teknik serialisasi data dinamis menggunakan \textit{ThingsBoard} sebagai \textit{middleware}. Penelitian ini mengusulkan format data fleksibel untuk mengakomodasi struktur data heterogen dari berbagai sensor. Hasil pengujian menunjukkan peningkatan efisiensi komunikasi antarperangkat hingga 25\% dan waktu pemrosesan lebih cepat. Pendekatan ini relevan bagi integrasi sistem sensor pertanian dengan berbagai jenis data lingkungan.
+
+    \item \textit{Internet of Things-enabled Agronomic Systems: Real-time Field Intelligence for Smarter Farming} — J. Khan et al. (2025) \\
+    Penelitian ini mengembangkan sistem agronomi berbasis \textit{IoT} yang memungkinkan pengumpulan dan analisis data lapangan secara \textit{real-time} untuk pengambilan keputusan presisi. Sistem terdiri dari modul sensor, aktuator, dan analitik \textit{cloud} yang memproses data lingkungan seperti kelembapan tanah dan suhu udara. Hasil penelitian menunjukkan peningkatan efisiensi penggunaan air dan pupuk hingga 20\%, membuktikan bahwa \textit{IoT-enabled farming} dapat mendukung pertanian berkelanjutan dengan kecerdasan adaptif.
+
+    \item \textit{Internet of Things for Smart Agriculture Using Cloud-Based Monitoring and Control System} — M. R. Ranjan, S. Saha, \& P. K. Singh (2024) \\
+    Penelitian ini merancang sistem pemantauan dan pengendalian pertanian berbasis \textit{IoT} yang terhubung dengan \textit{cloud server} untuk mendukung konsep \textit{smart agriculture}. Sistem menggunakan mikrokontroler \textit{ESP32} dengan sensor suhu, kelembapan tanah, dan cahaya yang mengirim data melalui protokol \textit{MQTT} ke \textit{ThingsBoard Cloud}. Hasil pengujian menunjukkan akurasi sensor ±1°C dan ±2\% RH dengan tingkat kehilangan data kurang dari 2\%. Studi ini menegaskan efektivitas arsitektur \textit{ESP32 + MQTT + ThingsBoard} untuk sistem pertanian terintegrasi berbasis \textit{Embedded Rust}.
+\end{enumerate}
+
+\end{longtable}
+
+\subsection{Rust}
+
+Rust adalah bahasa pemrograman modern yang semakin populer karena mengutamakan keamanan memori (\textit{memory safety}), kinerja tinggi, dan \textit{konkurensi}. Rust banyak digunakan dalam pengembangan sistem yang membutuhkan performa setara dengan C atau C++, namun dengan risiko \textit{bug} yang lebih kecil, terutama \textit{bug} terkait manajemen memori. Dengan sistem kepemilikan (\textit{ownership system}) dan pemeriksaan pinjaman (\textit{borrow checker}), Rust mencegah terjadinya kesalahan umum seperti \textit{null pointer dereference}, \textit{data race}, atau kebocoran memori, bahkan sebelum program dijalankan. Dalam pengembangan sistem perangkat lunak, Rust menjadi pilihan utama untuk membangun aplikasi tingkat rendah seperti \textit{kernel sistem operasi}, perangkat lunak \textit{embedded}, maupun \textit{WebAssembly (Wasm)}. 
+
+Selain itu, Rust juga mendukung ekosistem pengembangan aplikasi skala besar, termasuk layanan \textit{backend} dan \textit{command-line interface (CLI)}, berkat \textit{package manager} yang disebut \textit{Cargo} yang memudahkan manajemen pustaka dan dependensi. Rust juga memiliki peran penting dalam bidang pengembangan web melalui \textit{framework} seperti \textit{Rocket} dan \textit{Actix}, yang memungkinkan pengembang membangun aplikasi web yang cepat, aman, dan skalabel. Pada sisi lain, integrasinya dengan \textit{WebAssembly} menjadikan Rust relevan untuk aplikasi berbasis web modern, sehingga memungkinkan kode berjalan dengan efisiensi tinggi langsung di \textit{browser}. 
+
+Selain itu, Rust mendukung otomatisasi tugas maupun pemrosesan data dengan pustaka-pustaka komunitas yang terus berkembang. Berkat dokumentasi yang lengkap dan komunitas yang aktif, Rust memberikan pengalaman pengembangan yang lebih ramah meskipun memiliki konsep teknis yang ketat. Dengan kombinasi keamanan, kecepatan, dan fleksibilitas, Rust kini menjadi salah satu bahasa pemrograman yang dipertimbangkan secara serius untuk proyek-proyek yang menuntut efisiensi serta keandalan tinggi.
+
+
+% --- Gambar greenhouse ---
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\linewidth]{Screenshot 2025-10-15 152726.png}
+    \captionsetup{justification=centering}
+  \caption*{Gambar 2.1 Greenhouse}
+  \label{fig:greenhous}
+\end{figure}
+
+\subsection{RTC \textit{Real Time Clock}}
+\textit{Real-Time Clock (RTC)} merupakan komponen elektronik yang berfungsi menjaga dan mencatat waktu secara akurat, meskipun sistem utama dalam kondisi mati atau tidak memperoleh daya. \textit{RTC} bekerja menggunakan sumber daya cadangan seperti baterai atau \textit{supercapacitor} sehingga mampu mempertahankan data waktu (jam, menit, detik, tanggal, bulan, dan tahun) secara terus-menerus. Komponen ini biasanya dilengkapi dengan osilator kristal 32.768~Hz yang menghasilkan sinyal stabil satu detik sekali, menjadikannya ideal untuk aplikasi waktu nyata. Modul \textit{RTC} yang umum digunakan, seperti \textit{DS1307} dan \textit{DS3231}, menggunakan antarmuka komunikasi \textit{I\textsuperscript{2}C (Inter-Integrated Circuit)} untuk berinteraksi dengan mikrokontroler, termasuk \textit{ESP32-S3}, yang sering digunakan pada sistem \textit{IoT (Internet of Things)}.
+
+Dalam konteks \textit{Internet of Things (IoT)}, \textit{RTC} berperan penting untuk memberikan \textit{timestamp} akurat pada setiap data sensor yang dikirim ke \textit{server cloud}. Penanda waktu ini memungkinkan data suhu dan kelembapan diurutkan serta dianalisis berdasarkan waktu aktual, sehingga sangat membantu dalam pemantauan kondisi lingkungan secara \textit{real-time}. Selain itu, \textit{RTC} juga mendukung sinkronisasi waktu antarperangkat dan dapat dikombinasikan dengan \textit{Network Time Protocol (NTP)} untuk memperbaiki deviasi waktu. Dengan penerapan \textit{RTC} pada sistem \textit{Monitoring Suhu dan Kelembapan Berbasis Embedded Rust pada ESP32-S3 dengan Sensor DHT22}, data yang dikirim ke \textit{ThingsBoard Cloud} menjadi lebih reliabel dan terstruktur, mendukung analisis tren serta pengambilan keputusan berbasis data dalam penerapan \textit{Smart Agriculture}.
+
+
+\subsection{MQTT \textit{(Message Queuing Telemetry Transport)}}
+\textit{MQTT (Message Queuing Telemetry Transport)} memperkenalkan konsep komunikasi dengan menggunakan model \textit{publish} dan \textit{subscribe}. Dalam model ini, setiap entitas memiliki peran yang jelas, yaitu \textit{publisher} sebagai pengirim pesan dan \textit{subscriber} sebagai penerima pesan. Proses komunikasi tersebut tidak berlangsung secara langsung antara pengirim dan penerima, melainkan melalui sebuah komponen perantara yang disebut \textit{broker}. \textit{Broker} memiliki peran yang sangat krusial karena berfungsi menerima pesan dari \textit{publisher} lalu mendistribusikannya kepada \textit{subscriber} yang berlangganan pada \textit{topic} tertentu. Dengan demikian, \textit{broker} memastikan bahwa setiap pesan sampai kepada penerima yang tepat secara efisien dan terorganisir.
+
+Selain itu, komunikasi dalam \textit{MQTT} diatur melalui sebuah sistem yang disebut \textit{topic}. \textit{Topic} ini berfungsi sebagai jalur pengorganisasian pesan, di mana \textit{publisher} akan mengirimkan pesan ke sebuah \textit{topic} tertentu, dan \textit{subscriber} hanya akan menerima pesan jika mereka berlangganan pada \textit{topic} yang sama. Dengan adanya mekanisme ini, pertukaran pesan menjadi lebih selektif dan terstruktur, karena memungkinkan setiap perangkat hanya menerima informasi yang relevan dengan kebutuhannya. Arsitektur komunikasi berbasis \textit{publish-subscribe} ini menjadikan \textit{MQTT} sangat efisien, ringan, dan fleksibel dalam mendukung ekosistem \textit{Internet of Things (IoT)}, terutama pada sistem yang membutuhkan komunikasi \textit{real-time} dengan konsumsi sumber daya yang rendah.
+
+...
+% --- Gambar SHT20 (disarankan: ubah nama file agar tanpa spasi) ---
+\begin{figure}[H]
+  \centering
+  % ganti nama file di proyek jadi: SHT_20_FIX.jpg
+  \includegraphics[width=0.55\linewidth]{Picture1.jpg}
+  \captionsetup{justification=centering}
+  \caption*{Gambar 2.2 Protokol MQTT}
+  \label{fig:sht20}
+\end{figure}
+
+\subsection{ESP32-S3}
+ESP32-S3 merupakan mikrokontroler generasi lanjutan dari seri \textit{ESP32} yang dikembangkan oleh \textit{Espressif Systems}, dirancang khusus untuk aplikasi \textit{Internet of Things (IoT)}, kecerdasan buatan ringan (\textit{AI acceleration}), serta sistem tertanam yang membutuhkan kinerja tinggi dengan konsumsi daya rendah. Mikrokontroler ini menggunakan prosesor \textit{dual-core Xtensa\textsuperscript{\textregistered} LX7 32-bit} yang mampu beroperasi hingga frekuensi 240~MHz, dilengkapi dengan \textit{RAM} hingga 512~KB, serta dukungan \textit{Wi-Fi} 2.4~GHz dan \textit{Bluetooth Low Energy (BLE) 5.0} untuk konektivitas nirkabel. \textit{ESP32-S3} juga menyediakan sejumlah antarmuka komunikasi seperti \textit{UART}, \textit{SPI}, \textit{I\textsuperscript{2}C}, \textit{I\textsuperscript{2}S}, \textit{PWM}, dan \textit{ADC}, yang menjadikannya fleksibel untuk integrasi dengan berbagai sensor dan aktuator dalam sistem \textit{IoT} \cite{Espressif2023}.
+
+Selain performanya yang andal, \textit{ESP32-S3} memiliki fitur keamanan tingkat lanjut seperti \textit{AES}, \textit{SHA}, \textit{RSA}, dan \textit{secure boot}, yang menjamin integritas dan kerahasiaan data dalam aplikasi \textit{IoT} berbasis \textit{cloud}. Dalam konteks penelitian ini, \textit{ESP32-S3} digunakan sebagai perangkat utama pemroses data sensor \textit{DHT22}, yang kemudian mengirimkan data suhu dan kelembapan ke platform \textit{ThingsBoard Cloud} melalui protokol \textit{MQTT}. Penggunaan bahasa pemrograman \textit{Rust} dalam mode \textit{bare-metal} memberikan keunggulan tambahan berupa keamanan memori, efisiensi pemrosesan, serta kemampuan \textit{low-level control} terhadap perangkat keras. Dengan kombinasi kemampuan komputasi, konektivitas, dan keamanan tersebut, \textit{ESP32-S3} menjadi pilihan ideal untuk sistem monitoring lingkungan pertanian berbasis \textit{IoT} yang membutuhkan komunikasi \textit{real-time} dan keandalan tinggi.
+...
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{esp.jpg}
+    \captionsetup{justification=centering}
+  \caption*{Gambar 2.5 ESP32-S3}
+  \label{fig:iotfix}
+\end{figure}
+
+\subsection{Sensor DHT 22}
+DHT 22 merupakan sensor digital yang digunakan untuk mengukur suhu dan kelembapan udara secara simultan. Sensor ini banyak digunakan dalam berbagai aplikasi \textit{Internet of Things (IoT)} karena memiliki tingkat akurasi tinggi, konsumsi daya rendah, serta kemudahan dalam proses integrasi dengan mikrokontroler seperti \textit{ESP32-S3}. \textit{DHT22} bekerja berdasarkan prinsip \textit{capacitive humidity sensing} untuk mendeteksi kelembapan dan \textit{thermistor} untuk mendeteksi suhu, dengan keluaran data digital tunggal melalui satu pin. Rentang pengukuran suhu sensor ini berkisar antara \(-40^{\circ}C\) hingga \(+80^{\circ}C\) dengan akurasi \(\pm 0.5^{\circ}C\), sedangkan kelembapan dapat diukur dari 0\% hingga 100\% RH dengan akurasi \(\pm 2\%\) RH \cite{Aosong2022}.
+
+Dalam sistem pemantauan lingkungan berbasis \textit{IoT}, \textit{DHT22} berperan penting sebagai perangkat \textit{input} utama yang menyediakan data suhu dan kelembapan secara \textit{real-time}. Data dari sensor ini dikirim ke mikrokontroler \textit{ESP32-S3} untuk diproses dan diteruskan ke platform \textit{ThingsBoard Cloud} melalui protokol \textit{MQTT}. Keunggulan \textit{DHT22} dibandingkan sensor sejenis seperti \textit{DHT11} terletak pada resolusi data yang lebih tinggi, waktu respons yang lebih cepat (sekitar 2 detik), serta kestabilan pengukuran jangka panjang. Oleh karena itu, penerapan \textit{DHT22} dalam proyek \textit{Monitoring Suhu dan Kelembapan Berbasis Embedded Rust pada ESP32-S3} sangat sesuai untuk mendukung implementasi \textit{Smart Agriculture}, di mana ketepatan dan kontinuitas data lingkungan menjadi faktor utama keberhasilan sistem pemantauan pertanian modern.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{DHT.jpg}
+    \captionsetup{justification=centering}
+  \caption*{Gambar 2.6 Sensor DHT}
+  \label{fig:iotfix}
+\end{figure}
+
+\subsection{Cloud Platform (ThingsBoard)} 
+\textit{ThingsBoard} adalah platform \textit{open-source} untuk \textit{Internet of Things} (IoT) yang berfungsi sebagai jembatan penting antara perangkat fisik dan aplikasi pengguna. Platform ini menyediakan solusi komprehensif untuk mengumpulkan, mengolah, dan memvisualisasikan data dari perangkat IoT. Dengan mendukung berbagai protokol komunikasi standar seperti \textit{MQTT}, \textit{CoAP}, dan \textit{HTTP}, \textit{ThingsBoard} memungkinkan perangkat dari beragam produsen untuk terhubung dengan aman. Keamanan menjadi salah satu fitur utamanya, di mana setiap perangkat memiliki kredensial unik dan terotentikasi, memastikan data yang dikirim dan diterima tetap terlindungi. Intinya, \textit{ThingsBoard} menyederhanakan proses pengembangan solusi IoT yang skalabel dan andal, mulai dari manajemen perangkat hingga pengumpulan data.
+
+Salah satu keunggulan utama \textit{ThingsBoard} terletak pada komponen \textit{Rule Engine} dan \textit{Dashboard}-nya. \textit{Rule Engine} adalah mesin aturan yang sangat fleksibel, memungkinkan pengguna untuk mendefinisikan alur pemrosesan data secara kustom. Misalnya, data telemetri yang masuk dapat digunakan untuk memicu notifikasi, mengirim perintah ke perangkat lain, atau menyimpan data ke basis data eksternal. Sementara itu, \textit{Dashboard} menyediakan antarmuka visual yang kuat untuk menganalisis data \textit{real-time} maupun historis. Pengguna dapat membuat grafik, tabel, atau peta interaktif yang memberikan wawasan mendalam tentang kinerja sistem. Kombinasi dari manajemen perangkat yang efektif, pemrosesan data yang cerdas, dan visualisasi yang intuitif menjadikan \textit{ThingsBoard} sebagai fondasi yang ideal untuk membangun aplikasi IoT yang kompleks dan responsif.
+
+\begi\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{thingsboard.jpg}
+    \captionsetup{justification=centering}
+  \caption*{Gambar 2.7 Thingsboard}
+  \label{fig:iotfix}
+\end{figure}
+
+
+% =================== BAB III ===================
+\newpage
+\justifying
+\begin{center}
+  \Large\bfseries BAB III\\[0.3cm]
+  \Large\bfseries METODOLOGI
+\end{center}
+\addcontentsline{toc}{section}{BAB III METODOLOGI DAN ARSITEKTUR}
+\setcounter{section}{3}
+\setcounter{subsection}{0}
+
+\subsection{Komponen Utama}
+\begin{enumerate}
+    \item \textit{ESP32-S3} (Mikrokontroler Utama)
+    \item Sensor \textit{DHT22}
+    \item Modul \textit{RTC (Real-Time Clock)}
+    \item Protokol \textit{MQTT (Message Queuing Telemetry Transport)}
+\end{enumerate}
+
+\subsection{Diagram Arsitektur}
+Berdasarkan diagram tersebut, \textit{ThingsBoard} berfungsi sebagai platform \textit{IoT} yang menghubungkan perangkat fisik dengan antarmuka pengguna. Di bagian kiri, perangkat (\textit{devices}) seperti sensor dan robot pabrik mengirimkan data melalui protokol komunikasi standar seperti \textit{MQTT}, \textit{CoAP}, dan \textit{HTTP}. Data ini kemudian masuk ke dalam platform \textit{ThingsBoard} yang memiliki empat fungsi utama: \textit{Konektivitas \& Manajemen Perangkat} untuk otentikasi dan pengelolaan, \textit{Rule Engine} untuk memproses dan mengotomatisasi alur data, \textit{Penyimpanan Data}, serta \textit{Visualisasi Data \& Dashboard} untuk menampilkan informasi secara interaktif. Terakhir, di sisi kanan, antarmuka pengguna (\textit{User Interface}) memungkinkan pengguna untuk memantau data secara \textit{real-time}, menerima notifikasi, dan mengontrol perangkat dari jarak jauh melalui aplikasi \textit{mobile} atau \textit{web}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=9cm]{arsitektur.jpg}
+    \captionsetup{justification=centering}
+    \caption*{Gambar 3.2 Diagram Arsitektur Sistem IoT}
+    \label{fig:arsitektur}
+\end{figure}
+
+\subsection{Perancangan Hardware}
+Gambar berikut menunjukkan skema koneksi antara sensor \textit{DHT22} dan mikrokontroler \textit{ESP32-S3}. Sensor \textit{DHT22} memiliki tiga pin utama, yaitu \textit{VCC}, \textit{DATA}, dan \textit{GND}. Pada konfigurasi ini, pin \textit{VCC} dihubungkan ke pin \textit{3V3} pada \textit{ESP32-S3} sebagai sumber daya utama, pin \textit{GND} dihubungkan ke \textit{GND} mikrokontroler sebagai referensi tegangan, dan pin \textit{DATA} dihubungkan ke pin \textit{GPIO 4} sebagai jalur komunikasi digital. Sensor \textit{DHT22} mengirimkan sinyal data digital satu arah ke mikrokontroler melalui pin \textit{DATA}, yang kemudian dibaca dan diproses oleh program berbasis bahasa \textit{Rust}. Data hasil pembacaan suhu dan kelembapan tersebut diteruskan ke platform \textit{ThingsBoard Cloud} menggunakan protokol komunikasi \textit{MQTT}. Rangkaian ini dirancang untuk memastikan pembacaan sensor yang stabil, konsumsi daya yang rendah, serta mendukung sistem pemantauan lingkungan berbasis \textit{IoT} secara \textit{real-time}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{wiring.png}
+    \captionsetup{justification=centering}
+    \caption*{Gambar 3.3 Perancangan Hardware Sistem}
+    \label{fig:wiring}
+\end{figure}
+
+\subsection{Diagram Alir}
+Diagram alir pada gambar tersebut menggambarkan urutan logika kerja dari sistem monitoring suhu dan kelembapan berbasis \textit{Internet of Things (IoT}} yang dibangun menggunakan mikrokontroler \textit{ESP32-S3}. Diagram ini berfungsi untuk memperjelas proses komunikasi antara sensor, perangkat, serta \textit{cloud platform}, sehingga alur data dapat dipahami secara sistematis. Secara keseluruhan, alur dimulai dari inisialisasi sistem, di mana perangkat melakukan pengecekan awal terhadap status koneksi \textit{Wi-Fi}. Setelah koneksi jaringan terverifikasi, sensor \textit{DHT22} mulai membaca data suhu dan kelembapan yang kemudian diteruskan ke mikrokontroler \textit{ESP32-S3}. Data hasil pembacaan ini dikirimkan ke \textit{ThingsBoard Cloud} melalui protokol komunikasi \textit{MQTT} untuk divisualisasikan secara \textit{real-time} pada \textit{dashboard}. Setelah proses pengiriman data berhasil dan tersinkronisasi, sistem melakukan pemantauan terhadap status \textit{Over-The-Air (OTA) update}, yaitu pembaruan perangkat lunak jarak jauh yang memungkinkan modifikasi program tanpa koneksi fisik langsung ke perangkat. Tahap akhir dari diagram alir menunjukkan bahwa sistem kembali ke kondisi siap operasi setelah proses pembaruan selesai, memastikan seluruh komponen berfungsi optimal dalam mendukung sistem pemantauan pertanian cerdas.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{Screenshot 2025-10-15 203540.png}
+        \captionsetup{justification=centering}
+    \caption*{Gambar 3.4 Diagram Alir}
+    \label{fig:flowchart}
+\end{figure}
+
+\subsection{Langkah-langkah Pengujian}
+\begin{enumerate}
+    \item \textbf{Persiapan Direktori dan Struktur Proyek} \\
+    Tahap pertama adalah mempersiapkan lingkungan kerja dan struktur folder proyek yang akan digunakan untuk pengembangan sistem. Folder utama diletakkan di direktori \textit{Documents} dengan subdirektori bernama \textit{iot} yang berfungsi sebagai ruang kerja utama untuk semua file sumber, dependensi, dan konfigurasi proyek. Penamaan direktori ini bertujuan agar pengorganisasian file lebih mudah dan sistematis saat melakukan proses pengembangan maupun kompilasi program.
+
+    \item \textbf{Pembaruan Sistem dan Instalasi Dependensi} \\
+    Sebelum memulai proses instalasi alat pengembangan, dilakukan pembaruan sistem operasi \textit{Ubuntu} agar seluruh paket perangkat lunak berada pada versi terbaru dan stabil. Setelah pembaruan selesai, dilakukan instalasi berbagai dependensi penting yang dibutuhkan untuk membangun lingkungan pemrograman \textit{Rust} dan komunikasi dengan perangkat \textit{ESP32-S3}. Dependensi tersebut mencakup \textit{Git} untuk pengelolaan repositori kode, \textit{Curl} untuk pengunduhan paket dari internet, \textit{pkg-config} untuk mendeteksi pustaka sistem, serta \textit{libssl-dev} dan \textit{libudev-dev} yang dibutuhkan untuk komunikasi USB dan keamanan data. Tahapan ini penting untuk memastikan bahwa seluruh komponen dasar sistem operasi telah siap digunakan sebelum melanjutkan proses instalasi toolchain \textit{ESP32}.
+
+    \item \textbf{Instalasi Alat Pengembangan Embedded Rust} \\
+    Langkah berikutnya adalah memasang alat pengembangan utama berbasis \textit{Rust} yang diperlukan untuk memprogram perangkat \textit{ESP32-S3}. Alat pertama yang digunakan adalah \textit{espup}, yaitu utilitas resmi dari \textit{esp-rs} yang bertugas menyiapkan toolchain \textit{ESP-IDF (Espressif IoT Development Framework)} pada lingkungan \textit{Rust}. Proses ini mencakup pengunduhan pustaka \textit{ESP-IDF}, pengaturan variabel lingkungan, serta penyiapan target compiler untuk arsitektur \textit{Xtensa} yang digunakan oleh \textit{ESP32-S3}. Selain \textit{espup}, dilakukan pula instalasi alat bantu seperti \textit{cargo-generate}, \textit{ldproxy}, \textit{espflash}, dan \textit{cargo-espflash}. Masing-masing alat memiliki fungsi tersendiri — \textit{cargo-generate} untuk membuat proyek baru dari template, \textit{ldproxy} untuk mengatur tautan pustaka selama kompilasi, dan \textit{espflash} untuk mengunggah (flashing) program hasil kompilasi ke perangkat \textit{ESP32-S3}. Semua alat ini diinstal melalui ekosistem \textit{Cargo}, yaitu package manager bawaan bahasa \textit{Rust}.
+
+    \item \textbf{Instalasi dan Konfigurasi Lingkungan ESP-IDF} \\
+    Setelah seluruh dependensi dan alat bantu berhasil terpasang, dilakukan instalasi \textit{ESP-IDF (Espressif IoT Development Framework)} menggunakan perintah \textit{espup install}. Proses ini menyiapkan compiler toolchain, pustaka dasar, dan skrip \textit{build} yang diperlukan untuk mengompilasi kode \textit{Rust} agar kompatibel dengan arsitektur perangkat \textit{ESP32-S3}. \textit{ESP-IDF} juga berfungsi sebagai jembatan antara kode \textit{Rust} dan fungsi internal mikrokontroler seperti \textit{GPIO}, \textit{UART}, \textit{Wi-Fi}, serta sistem file internal. Setelah instalasi selesai, konfigurasi lingkungan diperiksa untuk memastikan semua variabel sistem telah terdeteksi dengan benar dan tidak terjadi konflik pada jalur \textit{path environment}.
+
+    \item \textbf{Pembuatan dan Konfigurasi Proyek Rust} \\
+    Pada tahap ini dilakukan pembuatan proyek baru berbasis \textit{Rust} menggunakan template \textit{embedded system}. Pengguna akan diminta untuk menentukan nama proyek, misalnya “\textit{project-iot}”. Selanjutnya, target perangkat dipilih yaitu \textit{ESP32-S3}, sesuai dengan \textit{hardware} yang digunakan. Dalam proses konfigurasi, pengguna juga diminta untuk menentukan apakah ingin mengaktifkan \textit{advanced template option}. Karena proyek ini menggunakan konfigurasi standar, maka opsi tersebut dipilih \textit{false}. Hasil dari tahapan ini adalah sebuah proyek \textit{Rust} dengan struktur folder yang berisi file utama seperti \textit{Cargo.toml} dan \textit{src/main.rs} yang siap untuk dikembangkan lebih lanjut.
+
+    \item \textbf{Pengeditan File Proyek dan Implementasi Kode} \\
+    Tahapan selanjutnya adalah membuka proyek menggunakan \textit{Visual Studio Code (VS Code)}. Pada tahap ini, file \textit{Cargo.toml} disesuaikan untuk menambahkan dependensi \textit{crate} yang dibutuhkan seperti \textit{esp-idf-sys}, \textit{esp-idf-hal}, \textit{dht-sensor}, dan \textit{mqtt-client}. Kemudian pada file \textit{main.rs}, dilakukan penulisan program utama untuk membaca data suhu dan kelembapan dari sensor \textit{DHT22} melalui pin \textit{GPIO}, memproses data, dan mengirimkannya ke server \textit{ThingsBoard Cloud} menggunakan protokol \textit{MQTT}. Program ini juga mencakup fungsi inisialisasi \textit{Wi-Fi}, pembacaan data sensor secara berkala, dan pencetakan hasil ke terminal serial untuk kebutuhan debugging.
+
+    \item \textbf{Kompilasi dan Validasi Lingkungan} \\
+    Setelah penulisan kode selesai, dilakukan proses kompilasi proyek untuk memastikan bahwa seluruh pustaka, dependensi, dan konfigurasi telah sesuai. Jika terjadi kesalahan pada variabel lingkungan, maka dilakukan pengecekan nilai \textit{IDF\_PATH}. Apabila variabel tersebut tidak kosong, berarti masih terdapat pengaturan \textit{ESP-IDF} dari proyek sebelumnya yang dapat menyebabkan konflik. Dalam hal ini, variabel harus dihapus agar lingkungan dapat diinisialisasi ulang dengan bersih. Setelah itu, dilakukan kembali instalasi \textit{ESP-IDF} menggunakan \textit{espup install} untuk memastikan konfigurasi ulang berhasil. Kompilasi kemudian diulang hingga sistem dapat membangun program tanpa error.
+
+    \item \textbf{Proses Flashing dan Monitoring Sistem} \\
+    Tahapan berikutnya adalah mengunggah (flashing) hasil kompilasi ke perangkat \textit{ESP32-S3}. Proses ini dilakukan menggunakan \textit{espflash}, yang berfungsi mengirimkan file biner hasil kompilasi ke memori mikrokontroler melalui port USB. Setelah program berhasil diunggah, dilakukan proses monitoring serial untuk memverifikasi bahwa data suhu dan kelembapan telah terbaca dengan benar dan dikirim ke \textit{ThingsBoard Cloud} secara \textit{real-time}. Jika masih ditemukan kesalahan dalam proses flashing atau komunikasi data, maka tahapan kompilasi dan flashing diulang hingga perangkat berjalan dengan baik. Setelah sistem berfungsi, data sensor dapat ditampilkan pada \textit{dashboard ThingsBoard} untuk keperluan analisis dan pemantauan jarak jauh.
+
+    \item \textbf{Evaluasi dan Pengujian Sistem} \\
+    Tahapan akhir melibatkan pengujian sistem secara menyeluruh, meliputi verifikasi pembacaan sensor \textit{DHT22}, kestabilan komunikasi \textit{MQTT}, serta keakuratan data yang dikirim ke \textit{ThingsBoard}. Selain itu, dilakukan uji konektivitas \textit{Wi-Fi} untuk memastikan sistem dapat tetap berfungsi dalam kondisi jaringan yang bervariasi. Hasil dari pengujian ini menjadi dasar evaluasi kinerja sistem dalam mendukung penerapan konsep \textit{Smart Agriculture} berbasis \textit{IoT}.
+\end{enumerate}
+
+
+% =================== BAB IV ===================
+\newpage
+\justifying
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+
+\begin{center}
+  \Large\bfseries BAB IV\\[0.3cm]
+  \Large\bfseries PEMBAHASAN DAN HASIL
+\end{center}
+\addcontentsline{toc}{section}{BAB IV PEMBAHASAN DAN HASIL}
+\setcounter{section}{4}
+\setcounter{subsection}{0}
+
+\subsection{Hasil Uji Coba}
+\begin{enumerate}
+
+    % ==== ITEM 1 ====
+    \item Hasil Flashing \textit{ESP32-S3} serta pembacaan sensor
+
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{Pembacaan sensor.jpg}
+    \captionsetup{justification=centering}
+    \caption*{Gambar 4.1 Tampilan Pembacaan Sensor}
+    \end{figure}
+
+    \indent Berdasarkan tampilan terminal pada Gambar di atas, hasil pembacaan sensor menunjukkan bahwa sistem telah berhasil menjalankan proses akuisisi dan pengiriman data suhu serta kelembapan secara \textit{real-time} menggunakan mikrokontroler \textit{ESP32-S3} yang diprogram dengan bahasa \textit{Rust}. Data yang ditampilkan dalam terminal memperlihatkan pembacaan suhu berkisar pada 26{,}7°C dan kelembapan sekitar 52{,}4\% RH, dengan pesan “\textit{Telemetri terkirim}” menandakan bahwa data tersebut berhasil dikirim ke platform \textit{ThingsBoard Cloud} melalui protokol \textit{MQTT}. Setiap data dikirim dalam interval waktu yang konstan, menunjukkan bahwa proses pembacaan sensor \textit{DHT22} dan transmisi data telah terintegrasi dengan baik. Tampilan ini juga menunjukkan kestabilan sistem dalam melakukan komunikasi dua arah antara mikrokontroler dan \textit{server cloud}, di mana tidak ditemukan pesan kesalahan selama proses pengiriman data berlangsung.
+
+    \indent Secara keseluruhan, hasil yang tampil di terminal menggambarkan bahwa sistem monitoring telah berjalan sesuai rancangan, yaitu mampu membaca, memproses, dan mengirimkan data sensor secara kontinu. Namun, sistem ini masih memiliki keterbatasan dalam pengambilan data secara 24 jam penuh akibat faktor kestabilan sinyal \textit{Wi-Fi} yang fluktuatif. Ketika koneksi jaringan tidak stabil, proses pengiriman data ke \textit{cloud} dapat tertunda atau terhenti sementara, yang menyebabkan jeda pada interval pembacaan. Meskipun demikian, nilai \textit{latency} rata-rata sebesar 0{,}537 detik yang diperoleh dari pengujian menunjukkan bahwa keterlambatan pengiriman masih berada dalam batas wajar untuk sistem \textit{IoT} berbasis \textit{real-time}. Dengan demikian, sistem dapat dikategorikan stabil, efisien, dan andal, serta memiliki potensi untuk dikembangkan lebih lanjut agar dapat melakukan pemantauan lingkungan secara terus-menerus dengan konektivitas yang lebih baik.
+
+    % ==== ITEM 2 ====
+    \item Tampilan Update OTA
+    
+    \begin{figure}[H]
+    \justifying
+    \includegraphics[width=15cm]{OTA.png}
+    \captionsetup{justification=centering}
+    \caption*{Gambar 4.2 Tampilan Update OTA pada Terminal}
+    \indent Berdasarkan tampilan terminal pada gambar di atas, dapat dianalisis bahwa sistem \textit{ESP32-S3} yang diprogram menggunakan bahasa \textit{Rust} berhasil menjalankan proses \textit{Over-The-Air (OTA)} \textit{update} melalui koneksi \textit{MQTT} secara otomatis. \textit{Log} terminal menunjukkan bahwa perangkat menerima pesan dari \textit{broker MQTT} dengan topik pembaruan \textit{firmware} \texttt{/devices/me/attributes/response/1} yang berisi \textit{metadata} versi perangkat lunak terbaru, yaitu \textit{V2.0} dengan algoritma \textit{checksum SHA256}. Sistem kemudian melakukan proses validasi versi dengan membandingkan versi \textit{firmware} yang sedang berjalan (\textit{V1.0}) dengan versi terbaru yang tersedia (\textit{V2.0}). Setelah proses verifikasi berhasil, perangkat mulai mengunduh \textit{file} pembaruan \textit{firmware} dari \textit{server} dengan ukuran \texttt{0x600000 byte}, yang kemudian dibagi ke dalam beberapa data \textit{chunk} berukuran 4096 \textit{byte} untuk proses transmisi bertahap. Aktivitas pembaruan ini memperlihatkan bahwa sistem mampu menangani proses \textit{OTA update} secara efisien, di mana status \textit{download progress} ditampilkan secara bertahap hingga mencapai 30\% pada \textit{log} yang tertera. Hal ini membuktikan bahwa protokol \textit{MQTT} berfungsi optimal dalam mentransfer data \textit{firmware} secara aman dan andal. Setiap \textit{chunk} data yang berhasil dikirim ditandai dengan pesan ``\textit{Published firmware chunk}'' yang menandakan integritas transmisi data tetap terjaga selama proses pembaruan berlangsung. Dengan demikian, hasil ini menunjukkan bahwa implementasi \textit{OTA} pada sistem berbasis \textit{Rust bare-metal ESP32-S3} telah bekerja secara efektif dan sesuai dengan standar komunikasi \textit{IoT} modern. Meskipun proses pembaruan berjalan dengan baik, sistem tetap perlu diuji lebih lanjut untuk memastikan stabilitas koneksi selama pengunduhan \textit{firmware} besar dalam kondisi jaringan yang fluktuatif, agar proses \textit{firmware update} dapat diselesaikan secara penuh tanpa gangguan konektivitas.
+    \end{figure}
+
+    % ==== ITEM 3 ====
+    \item Tampilan Pembacaan Sensor pada\textit{ThingsBoard}
+
+    \begin{figure}[H]
+    \centering
+    \justifying
+    \includegraphics[width=15cm]{Screenshot (418).png}
+        \captionsetup{justification=centering}
+    \caption*{Gambar 4.3 Tampilan Pembacaan Sensor dari Thingsboard}
+    \indent Berdasarkan visualisasi data real-time sensor \textbf{DHT22} pada \textit{platform} \textbf{ThingsBoard Cloud}, grafik tersebut menyajikan plot temporal dari dua variabel esensial lingkungan. Sumbu horizontal merepresentasikan \textbf{rentang waktu akuisisi data} (\textit{time domain}), sementara sumbu vertikal menskalakan nilai pengukuran. Secara kuantitatif, data \textbf{suhu} (\textit{temperature}, dalam $\text{°C}$) menunjukkan \textit{baseline} yang relatif stabil, berosilasi tipis di sekitar $\mathbf{25\text{°C}}$ hingga $\mathbf{27\text{°C}}$, mengindikasikan kondisi termal yang konsisten pada lokasi \textit{deployment}. Kontras dengan suhu, pembacaan \textbf{kelembaban} (\textit{humidity}, dalam $\text{\%}$) terekam pada \textit{level} yang lebih tinggi dan menunjukkan volatilitas yang lebih nyata, terkonsentrasi di kisaran $\mathbf{60\text{\%}}$ sampai $\mathbf{70\text{\%}}$. Konsistensi \textit{logging} dan \textit{rendering} data pada \textit{dashboard} ThingsBoard ini memvalidasi integritas \textbf{arsitektur sistem \textit{Internet of Things} / IoT}, menegaskan keberhasilan transmisi data dari \textit{edge device} ke \textit{cloud} untuk keperluan \textit{monitoring} dan analisis kinerja.
+    \end{figure}
+
+    % ==== ITEM 3 ====
+    \item \textit{Latency Analysis IoT Data Streaming}
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{humidity.png}
+    \captionsetup{justification=centering}
+    \caption*{Gambar 4.2 Grafik Sensor \textit{Humidity}}
+    \end{figure}
+
+    \indent Grafik menunjukkan perbandingan antara \textit{timestamp} dan \textit{RTC} terhadap hasil pembacaan kelembapan udara (\textit{humidity}) dari sensor \textit{DHT22}. Pola grafik memperlihatkan fluktuasi nilai kelembapan yang relatif stabil, menandakan bahwa sensor mampu merespons perubahan kondisi lingkungan dengan baik. Data yang dihasilkan menunjukkan bahwa sistem mampu membaca kelembapan udara secara kontinu dengan tingkat ketepatan yang tinggi. Sinkronisasi waktu antara \textit{timestamp} dan \textit{RTC} juga menunjukkan bahwa sistem telah bekerja secara konsisten, sehingga setiap data terekam berdasarkan waktu aktual di lapangan. Hal ini membuktikan bahwa integrasi antara sensor \textit{DHT22}, mikrokontroler \textit{ESP32-S3}, dan sistem waktu \textit{real-time} telah berjalan dengan baik.
+
+    \indent Namun demikian, hasil penelitian menunjukkan bahwa sistem ini belum dapat melakukan pengambilan data secara penuh selama 24 jam. Hal ini disebabkan oleh kestabilan sinyal jaringan \textit{Wi-Fi} yang tidak konstan, sehingga dalam beberapa periode terjadi jeda atau keterlambatan pengiriman data ke \textit{server cloud}. Berdasarkan hasil analisis \textit{latency}, rata-rata keterlambatan pengiriman data sebesar 0{,}537 detik, dengan nilai maksimum mencapai 1{,}499 detik. Nilai ini masih tergolong rendah dan menunjukkan bahwa meskipun terdapat gangguan koneksi jaringan, sistem tetap mampu mempertahankan komunikasi yang efisien dengan \textit{ThingsBoard Cloud}. Secara keseluruhan, sistem dapat dikategorikan stabil dan reliabel untuk pemantauan kelembapan udara secara \textit{real-time}, meskipun masih memerlukan optimasi pada sisi jaringan agar dapat beroperasi terus-menerus tanpa gangguan.
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{temperature.png}
+    \captionsetup{justification=centering}
+    \caption*{Gambar 4.3 Grafik Sensor \textit{Temperature}}
+    \end{figure}
+
+    \indent Gambar berikut menampilkan hubungan antara \textit{timestamp} dan \textit{RTC} terhadap hasil pembacaan suhu udara (\textit{temperature}) dari sensor \textit{DHT22}. Pola grafik memperlihatkan perubahan nilai suhu yang mengikuti dinamika lingkungan sekitar, menunjukkan bahwa sistem mampu menangkap fluktuasi suhu dengan baik dan konsisten. Pembacaan yang stabil menandakan bahwa sensor bekerja dalam kondisi optimal dan tidak mengalami anomali data yang signifikan. Selain itu, perbedaan waktu antara \textit{timestamp} dan \textit{RTC} menunjukkan tingkat \textit{latency} sistem yang kecil, mengindikasikan keberhasilan sinkronisasi antara waktu lokal mikrokontroler dengan waktu aktual dari \textit{RTC}. Dengan demikian, sistem berbasis \textit{Embedded Rust} pada \textit{ESP32-S3} terbukti mampu melakukan pembacaan suhu secara akurat dan berkesinambungan.
+
+    \indent Sama seperti pengujian pada sensor kelembapan, penelitian ini juga belum mampu merekam data suhu secara penuh selama 24 jam karena dipengaruhi oleh kestabilan sinyal jaringan \textit{Wi-Fi} yang fluktuatif. Ketika sinyal melemah, proses pengiriman data suhu ke \textit{ThingsBoard Cloud} mengalami penundaan sementara, yang berdampak pada ketidakteraturan interval pembacaan di beberapa titik waktu. Hasil analisis \textit{latency} menunjukkan bahwa keterlambatan rata-rata pengiriman data sebesar 0{,}537 detik, dengan nilai tertinggi mencapai 1{,}499 detik, yang masih tergolong baik untuk sistem \textit{IoT real-time}. Dengan tingkat \textit{latency} yang rendah dan kemampuan sinkronisasi waktu yang baik, sistem ini tetap dapat dikategorikan stabil dan efisien, serta berpotensi untuk dikembangkan lebih lanjut agar dapat melakukan pemantauan suhu secara berkelanjutan dalam durasi 24 jam penuh tanpa gangguan jaringan.
+
+\end{enumerate}
+
+
+\end{enumerate}
+
+
+\subsection{Hasil Implementasi Sistem}
+
+\subsubsection{Grafik ThingsBoard}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{Grafik Thingsboard.png}
+    \captionsetup{justification=centering}
+    \caption{Gambar 4.2 Grafik Suhu dan Kelembapan pada Dashboard ThingsBoard}
+\end{figure}
+
+Visualisasi dashboard \textit{ThingsBoard} menampilkan data suhu dan kelembapan secara \textit{real-time}. Nilai yang diterima berasal langsung dari perangkat \textit{ESP32-S3} melalui protokol \textit{MQTT}. Hasil pengujian menunjukkan bahwa data dapat dikirim dan ditampilkan tanpa kehilangan paket dengan tingkat akurasi tinggi.
+
+\subsubsection{Pembahasan}
+Berdasarkan implementasi yang dilakukan, sistem berhasil membaca, mengirim, dan menampilkan data suhu serta kelembapan secara terintegrasi. Penggunaan bahasa \textit{Rust} memberikan keuntungan dari sisi keamanan memori dan stabilitas performa, sedangkan mikrokontroler \textit{ESP32-S3} memungkinkan pemrosesan data secara cepat dengan konsumsi daya rendah. Kombinasi \textit{MQTT}, \textit{InfluxDB}, dan \textit{ThingsBoard Cloud} menghasilkan sistem pemantauan lingkungan pertanian yang efisien, aman, serta mendukung konsep \textit{Smart Agriculture}.
+
+% =================== BAB V ===================
+\newpage
+\justifying
+\begin{center}
+  \Large\bfseries BAB V\\[0.3cm]
+  \Large\bfseries KESIMPULAN DAN SARAN
+\end{center}
+\addcontentsline{toc}{section}{BAB V KESIMPULAN DAN SARAN}
+\setcounter{section}{5}
+\setcounter{subsection}{0}
+
+\subsection{Kesimpulan dan Saran}
+\subsubsection{Kesimpulan}
+% (\subsection{Kesimpulan}
+Sistem pemantauan suhu dan kelembapan berbasis mikrokontroler ESP32-S3 dengan pemrograman Embedded Rust dan sensor DHT22 telah berhasil diimplementasikan. Sistem ini mampu membaca data suhu dengan akurasi ±0,5°C dan kelembapan ±2 RH secara real-time serta mengirimkan data melalui protokol MQTT ke platform ThingsBoard Cloud secara stabil dan efisien. Integrasi Real-Time Clock (RTC) mendukung pencatatan waktu yang akurat untuk analisis data berbasis waktu nyata. Meskipun terdapat beberapa kendala kestabilan koneksi Wi-Fi, latency rata-rata sebesar 0,537 detik masih menunjukkan kinerja yang baik untuk aplikasi IoT dalam mendukung konsep Smart Agriculture.)
+
+\subsubsection{Saran}
+% (Beberapa saran untuk pengembangan sistem ke depan adalah sebagai berikut:
+\begin{itemize}
+  \item Melakukan optimasi kestabilan jaringan Wi-Fi agar sistem dapat bekerja secara terus-menerus selama 24 jam penuh tanpa gangguan.
+  \item Mempertimbangkan penerapan teknologi edge computing untuk mengurangi ketergantungan pada koneksi cloud secara langsung.
+  \item Mengembangkan fitur kontrol otomatis berbasis hasil pemantauan untuk meningkatkan efisiensi pengelolaan lahan pertanian.
+  \item Memperkuat sistem keamanan dan dokumentasi pemrograman Rust guna meningkatkan keandalan dan kemudahan pengembangan.
+  \item Melakukan pengujian lebih lanjut pada berbagai kondisi dan sensor lain untuk meningkatkan validitas dan kesiapan implementasi di lapangan.
+\end{itemize}
+
+% =================== DAFTAR PUSTAKA ===================
+\newpage
+\justifying
+\begin{center}
+\Large\bfseries DAFTAR PUSTAKA\\[0 cm]
+\end{center}
+\addcontentsline{toc}{section}{DAFTAR PUSTAKA}
+\setlength{\parindent}{0cm}
+
+\renewcommand{\refname}{}
+\begin{thebibliography}{99}
+\bibitem{Alakus2024}
+Alaku\c{s}, D. O. (2024). Smart agriculture, precision agriculture, digital twins in agriculture: Similarities and differences. \textit{2024 Innovations in Intelligent Systems and Applications Conference (ASYU)}. https://doi.org/10.1109/ASYU62119.2024.10757158
+
+% Ahmad, Y. A., Gunawan, T. S., Mansor, H., Hamida, B. A., Hishamudin, A. F., & Arifin, F. (2021). On the evaluation of DHT22 temperature sensor for IoT application. 2021 8th International Conference on Computer and Communication Engineering (ICCCE). IEEE. https://doi.org/10.1109/ICCCE2021
+\bibitem{Ahmad2021}
+Ahmad, Y. A., Gunawan, T. S., Mansor, H., Hamida, B. A., Hishamudin, A. F., \& Arifin, F. (2021). On the evaluation of DHT22 temperature sensor for IoT application. \textit{2021 8th International Conference on Computer and Communication Engineering (ICCCE)}. IEEE. https://doi.org/10.1109/ICCCE2021
+
+% Ansyah, A. S. S., Suriawan, M. V., Arifin, M., Farhansyah, N. H., Studiawan, H., Alfan, M. B., & Shiddiqi, A. M. (2023). MQTT broker performance comparison between AWS, Microsoft Azure and Google Cloud Platform. 2023 International Conference on Recent Trends in Electronics and Communication (ICRTEC). IEEE. https://doi.org/10.1109/ICRTEC56977.2023.10111870
+\bibitem{Ansyah2023}
+Ansyah, A. S. S., Suriawan, M. V., Arifin, M., Farhansyah, N. H., Studiawan, H., Alfan, M. B., \& Shiddiqi, A. M. (2023). MQTT broker performance comparison between AWS, Microsoft Azure and Google Cloud Platform. \textit{2023 International Conference on Recent Trends in Electronics and Communication (ICRTEC)}. IEEE. https://doi.org/10.1109/ICRTEC56977.2023.10111870
+
+% Frank, E., Schleiser, K., Fouquet, R., Zandberg, K., Amsüss, C., & Baccelli, E. (2025). Ariel OS: An embedded Rust operating system for networked sensors & multi-core microcontrollers. 2025 21st International Conference on Distributed Computing in Smart Systems and the Internet of Things (DCOSS-IoT). https://doi.org/10.1109/DCOSS-IOT65416.2025.00040
+\bibitem{Frank2025}
+Frank, E., Schleiser, K., Fouquet, R., Zandberg, K., Ams{\"u}ss, C., \& Baccelli, E. (2025). Ariel OS: An embedded Rust operating system for networked sensors \& multi-core microcontrollers. \textit{2025 21st International Conference on Distributed Computing in Smart Systems and the Internet of Things (DCOSS-IoT)}. https://doi.org/10.1109/DCOSS-IOT65416.2025.00040
+
+% Gupta, A. K., & Johari, R. (2019). IOT based electrical device surveillance and control system. Dalam 2019 4th International Conference on Internet of Things: Smart Innovation and Usages (IoT-SIU) (hlm. 1-5). IEEE.
+\bibitem{Gupta2019}
+Gupta, A. K., \& Johari, R. (2019). IOT based electrical device surveillance and control system. Dalam \textit{2019 4th International Conference on Internet of Things: Smart Innovation and Usages (IoT-SIU)} (hlm. 1--5). IEEE.
+
+% Henschke, M., Wei, X., & Zhang, X. (2025). Data visualization for wireless sensor networks using ThingsBoard. College of Staten Island, City University of New York. IEEE Xplore.
+\bibitem{Henschke2025}
+Henschke, M., Wei, X., \& Zhang, X. (2025). Data visualization for wireless sensor networks using ThingsBoard. \textit{College of Staten Island, City University of New York}. IEEE Xplore.
+
+% Jocknoi, L., & Kucharoen, P. (2024). ESP32Exten: Designing and developing an ESP32 microcontroller expansion for IoT applications with motor propulsion and AI image processing. Proceedings of the 8th International Conference on Information Technology (InCIT 2024). IEEE. https://doi.org/10.1109/InCIT63192.2024.10810578
+\bibitem{Jocknoi2024}
+Jocknoi, L., \& Kucharoen, P. (2024). ESP32Exten: Designing and developing an ESP32 microcontroller expansion for IoT applications with motor propulsion and AI image processing. \textit{Proceedings of the 8th International Conference on Information Technology (InCIT 2024)}. IEEE. https://doi.org/10.1109/InCIT63192.2024.10810578
+
+% Kubaščík, M., Tupý, A., Šumský, J., & Bača, T. (2024). OTA firmware updates on ESP32 based microcontrollers. 2024 IEEE 17th International Scientific Conference on Informatics. IEEE. https://doi.org/10.1109/Informatics62280.2024.10900824
+\bibitem{Kubascik2024}
+Kuba\v{s}\v{c}{\'i}k, M., Tup{\'y}, A., \v{S}umsk{\'y}, J., \& Ba\v{c}a, T. (2024). OTA firmware updates on ESP32 based microcontrollers. \textit{2024 IEEE 17th International Scientific Conference on Informatics}. IEEE. https://doi.org/10.1109/Informatics62280.2024.10900824
+
+% Lee, C., & Fumagalli, A. (2019). Internet of things security - Multilayered method for end to end data communications over cellular networks. Dalam 2019 IEEE 5th World Forum on Internet of Things (WF-IoT) (hlm. 24-28). IEEE.
+\bibitem{Lee2019}
+Lee, C., \& Fumagalli, A. (2019). Internet of things security - Multilayered method for end to end data communications over cellular networks. Dalam \textit{2019 IEEE 5th World Forum on Internet of Things (WF-IoT)} (hlm. 24--28). IEEE.
+
+% Maier, A., Sharp, A., & Vagapov, Y. (2017). Comparative analysis and practical implementation of the ESP32 microcontroller module for the Internet of Things. Proceedings of the 2017 IEEE Conference on Internet of Things. IEEE.
+\bibitem{Maier2017}
+Maier, A., Sharp, A., \& Vagapov, Y. (2017). Comparative analysis and practical implementation of the ESP32 microcontroller module for the Internet of Things. \textit{Proceedings of the 2017 IEEE Conference on Internet of Things}. IEEE.
+
+% Mishra, M., Shukla, A., & Varshney, H. (2024). ESP32-S3 DevKit-C integration for enhanced road safety for pothole detection and nighttime driving assistance. 2024 2nd International Conference on Disruptive Technologies (ICDT). https://doi.org/10.1109/ICDT61202.2024.10488995
+\bibitem{Mishra2024}
+Mishra, M., Shukla, A., \& Varshney, H. (2024). ESP32-S3 DevKit-C integration for enhanced road safety for pothole detection and nighttime driving assistance. \textit{2024 2nd International Conference on Disruptive Technologies (ICDT)}. https://doi.org/10.1109/ICDT61202.2024.10488995
+
+% Narendra, N. C., Shukla, A., Nayak, S., Jagadish, A., & Kalkur, R. (2019). Genoma: Distributed provenance as a service for IoT-based systems. Dalam 2019 IEEE 5th World Forum on Internet of Things (WF-IoT) (hlm. 755-760). IEEE.
+\bibitem{Narendra2019}
+Narendra, N. C., Shukla, A., Nayak, S., Jagadish, A., \& Kalkur, R. (2019). Genoma: Distributed provenance as a service for IoT-based systems. Dalam \textit{2019 IEEE 5th World Forum on Internet of Things (WF-IoT)} (hlm. 755--760). IEEE.
+
+% Petrillo, F. (2025). Should we use Rust Platform in our IoT applications? A multivocal review. 2025 IEEE/ACM 7th International Workshop on Software Engineering Research & Practices for the IoT (SERP4IoT). https://doi.org/10.1109/SERP4IoT66600.2025.00009
+\bibitem{Petrillo2025}
+Petrillo, F. (2025). Should we use Rust Platform in our IoT applications? A multivocal review. \textit{2025 IEEE/ACM 7th International Workshop on Software Engineering Research \& Practices for the IoT (SERP4IoT)}. https://doi.org/10.1109/SERP4IoT66600.2025.00009
+
+% Praveen, M., & Almobaideen, W. (2023). The current state of research on malware written in the Rust programming language. 2023 International Conference on Information Technology (ICIT). IEEE. https://doi.org/10.1109/ICIT58056.2023.10226157
+\bibitem{Praveen2023}
+Praveen, M., \& Almobaideen, W. (2023). The current state of research on malware written in the Rust programming language. \textit{2023 International Conference on Information Technology (ICIT)}. IEEE. https://doi.org/10.1109/ICIT58056.2023.10226157
+
+% Rádai, R., & Kovácsházy, T. (2025). Real-time GPIO performance of modern programming languages for embedded Linux application development. 26th International Carpathian Control Conference (ICCC 2025). IEEE. https://doi.org/10.1109/ICCC65605.2025.11022882
+\bibitem{Radai2025}
+R{\'a}dai, R., \& Kov{\'a}csh{\'a}zy, T. (2025). Real-time GPIO performance of modern programming languages for embedded Linux application development. \textit{26th International Carpathian Control Conference (ICCC 2025)}. IEEE. https://doi.org/10.1109/ICCC65605.2025.11022882
+
+% Sun, C., Xing, R., Wu, Y., Zhou, G., Zheng, F., & Hu, D. (2021). Design of over-the-air firmware update and management for IoT device with cloud-based RESTful web services. 2021 China Automation Congress (CAC). IEEE. https://doi.org/10.1109/CAC53003.2021.9727516
+\bibitem{SunC2021}
+Sun, C., Xing, R., Wu, Y., Zhou, G., Zheng, F., \& Hu, D. (2021). Design of over-the-air firmware update and management for IoT device with cloud-based RESTful web services. \textit{2021 China Automation Congress (CAC)}. IEEE. https://doi.org/10.1109/CAC53003.2021.9727516
+
+% Sun, J. (2024). Visualization and analysis of knowledge structure of smart agriculture in the context of big data. 2024 9th International Conference on Computer and Communication Systems (ICCCS). https://doi.org/10.1109/ICCCS61882.2024.10603152
+\bibitem{SunJ2024}
+Sun, J. (2024). Visualization and analysis of knowledge structure of smart agriculture in the context of big data. \textit{2024 9th International Conference on Computer and Communication Systems (ICCCS)}. https://doi.org/10.1109/ICCCS61882.2024.10603152
+
+% Wang, S., Hou, Y., Gao, F., & Ji, X. (2016). A novel IoT access architecture for vehicle monitoring system. Dalam 2016 IEEE 3rd World Forum on Internet of Things (WF-IoT) (hlm. 639-642). IEEE. https://doi.org/10.1109/WF-IoT.2016.7845396
+\bibitem{Wang2016}
+Wang, S., Hou, Y., Gao, F., \& Ji, X. (2016). A novel IoT access architecture for vehicle monitoring system. Dalam \textit{2016 IEEE 3rd World Forum on Internet of Things (WF-IoT)} (hlm. 639--642). IEEE. https://doi.org/10.1109/WF-IoT.2016.7845396
+
+% Yoshimura, N., Oyama, H., & Azumi, T. (2024). TECS/Rust: Memory-safe component framework for embedded systems. 27th IEEE International Symposium on Real-Time Distributed Computing (ISORC 2024). IEEE. https://doi.org/10.1109/ISORC61049.2024.10551370
+\bibitem{Yoshimura2024}
+Yoshimura, N., Oyama, H., \& Azumi, T. (2024). TECS/Rust: Memory-safe component framework for embedded systems. \textit{27th IEEE International Symposium on Real-Time Distributed Computing (ISORC 2024)}. IEEE. https://doi.org/10.1109/ISORC61049.2024.10551370
+
+% Zhang, C. (2021). Intelligent Internet of things service based on artificial intelligence technology. 2021 IEEE 2nd International Conference on Big Data, Artificial Intelligence and Internet of Things Engineering (ICBAIE). https://doi.org/10.1109/ICBAIE52039.2021.9390061
+\bibitem{Zhang2021}
+Zhang, C. (2021). Intelligent Internet of things service based on artificial intelligence technology. \textit{2021 IEEE 2nd International Conference on Big Data, Artificial Intelligence and Internet of Things Engineering (ICBAIE)}. https://doi.org/10.1109/ICBAIE52039.2021.9390061
+
+\end{thebibliography}
+
+\end{document}
