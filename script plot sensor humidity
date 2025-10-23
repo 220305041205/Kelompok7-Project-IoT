@@ -1,0 +1,23 @@
+reset session
+set autoscale fix
+set xrange [:]; set yrange [:]
+
+set datafile separator ","
+set datafile columnheaders
+set grid
+set term qt
+
+set xdata time
+set timefmt "%Y-%m-%d %H:%M:%S"
+set format x "%H:%M\n%m-%d"
+
+set xlabel "Time"
+set ylabel "Humidity (%)"
+set title "Humidity — Timestamp vs RTC"
+set key outside top center horizontal
+
+set style line 1 lc rgb "#1f77b4" lw 2 pt 7 ps 0.5   # Timestamp
+set style line 2 lc rgb "#ff7f0e" lw 2 dt 2 pt 5 ps 0.5   # RTC
+
+plot "tubes.csv" using (timecolumn(1,"%Y-%m-%d %H:%M:%S")):2 with linespoints ls 1 title "Humidity (Timestamp)", \
+     ""           using (timecolumn(5,"%s")):2                     with linespoints ls 2 title "Humidity (RTC)"
